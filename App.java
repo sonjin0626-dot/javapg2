@@ -5,12 +5,12 @@ import java.nio.charset.StandardCharsets; // UTF-8を指定する道具を読み
 import java.util.ArrayList; // Todoを入れるリストの道具を読み込む
 import java.util.List; // リストの型を読み込む
 
-class Todo { // ★変更
+class AppTodo { // App専用のTodo
     private final int id; // ★変更
     private final String title; // ★変更
     private boolean done; // ★変更
 
-    Todo(int id, String title) { // ★変更
+    AppTodo(int id, String title) { // ★変更
         this.id = id; // ★変更
         this.title = title; // ★変更
         this.done = false; // ★変更
@@ -34,13 +34,13 @@ class Todo { // ★変更
 } // ★変更
 
 public class App { // このプログラムの名前を決める
-    static List<Todo> todos = new ArrayList<>(); // ★変更
+    static List<AppTodo> todos = new ArrayList<>(); // ★変更
     static int nextId = 1; // ★変更
 
     public static void main(String[] args) throws Exception { // プログラムをここから始める
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0); // 8080番で待つサーバーを作る
-        todos.add(new Todo(nextId++, "牛乳を買う")); // ★変更
-        Todo egg = new Todo(nextId++, "卵を買う"); // ★変更
+        todos.add(new AppTodo(nextId++, "牛乳を買う")); // ★変更
+        AppTodo egg = new AppTodo(nextId++, "卵を買う"); // ★変更
         egg.setDone(true); // ★変更
         todos.add(egg); // ★変更
         server.createContext("/", exchange -> { // 「/」へのアクセスを受け取る
@@ -52,7 +52,7 @@ public class App { // このプログラムの名前を決める
                 String form = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8); // 送られた文字を読む
                 if (form.startsWith("todo=")) { // Todo欄の値があるとき
                     String title = URLDecoder.decode(form.substring(5), StandardCharsets.UTF_8); // ★変更
-                    todos.add(new Todo(nextId, title)); // ★変更
+                    todos.add(new AppTodo(nextId, title)); // ★変更
                     nextId++; // ★変更
                 }
                 exchange.getResponseHeaders().set("Location", "/"); // ★変更
@@ -64,7 +64,7 @@ public class App { // このプログラムの名前を決める
                 if (query != null && query.startsWith("id=") && query.length() > 3) { // ★追加
                     try { // ★追加
                         int id = Integer.parseInt(query.substring(3)); // ★追加
-                        for (Todo todo : todos) { // ★追加
+                        for (AppTodo todo : todos) { // ★追加
                             if (todo.getId() == id) { // ★追加
                                 todo.setDone(true); // ★追加
                                 break; // ★追加
@@ -99,7 +99,7 @@ public class App { // このプログラムの名前を決める
                     html += "<p>やることは、いまゼロです</p>";
                 }
                 html += "<ul>"; // 箇条書きを始める
-                for (Todo todo : todos) { // ★変更
+                for (AppTodo todo : todos) { // ★変更
                     String mark = ""; // ★変更
                     if (todo.isDone()) { // ★変更
                         mark = " ✔"; // ★変更
